@@ -48,44 +48,29 @@ object Main {
       }
       samples
     }
+  }
 
-    def line(startValue: Double, endValue: Double, seconds: Double): Unit = {
+  implicit class Sample2(samples: Iterator[Double]) {
+    def *(other: Iterator[Double]) : Iterator[Double] = {
+      new Multiply(samples, other)
+    }
 
+    def *(other: Double) : Iterator[Double] = {
+      new Multiply(samples, Iterator.continually(other))
     }
   }
 
   def main(args: Array[String]): Unit = {
     startSoundSystem()
-    val line = Array.fill[Double](44100)(0)
 
-    for (i <- line.indices) {
-      line(i) = i * invsr
-    }
-    val arr = SinOsc.get(44100, 100.0) * 1000 * line + 400
-    var factor = 0.0
-
-    //play(saw(44100, 100.0))
-    val strStart = System.currentTimeMillis()
-    val str = fibs(100000)
-    val strEnd = System.currentTimeMillis()
-    val plainStart = System.currentTimeMillis()
-    val plain = fibs(100000)
-    val plainEnd = System.currentTimeMillis()
-
-    println(strEnd - strStart)
-    println(str)
-    println(plainEnd - plainStart)
-    println(plain)
-
-
-
-    line(10)
+    play(saw(100.0) * saw(332.0) * line(1, 0, 1))
   }
 
   def startSoundSystem(): Unit = {
     println("Starting sound system")
-
-    val mixerinfo = javax.sound.sampled.AudioSystem.getMixerInfo().filter(mixerinfo => "Speakers (RME Fireface UC)".equals(mixerinfo.getName())).apply(0)
+    javax.sound.sampled.AudioSystem.getMixerInfo map(x => x.getName) foreach println
+    //val mixerinfo = javax.sound.sampled.AudioSystem.getMixerInfo().filter(mixerinfo => "Speakers (RME Fireface UC)".equals(mixerinfo.getName())).apply(0)
+    val mixerinfo = javax.sound.sampled.AudioSystem.getMixerInfo().filter(mixerinfo => "default [default]".equals(mixerinfo.getName)).apply(0)
     println(mixerinfo.getName())
     val audioformat = new javax.sound.sampled.AudioFormat(javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED, 44100, 16, 2, 4, 44100, false);
     println(audioformat)
@@ -134,6 +119,10 @@ object Main {
       buffer.putShort(pcm16sample)
     })
     sourcedataline.write(buffer.array, 0, buffer.array.length)
+  }
+
+  def play(samples : Iterator[Double]) : Unit = {
+    play(samples.toArray)
   }
 }
 

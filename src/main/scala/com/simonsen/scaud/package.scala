@@ -27,14 +27,7 @@ package object scaud {
     samples
   }
 
-  def line(start: Double, end: Double, time: Double) : Stream[Double] =
-    start #:: (if (start > 0) line(start - 1, 0, 0) else Stream.empty)
-
-  def line2(start: Double, end: Double, time: Double) : Unit = 3
-
   lazy val fibs: Stream[BigInt] = BigInt(0) #:: BigInt(1) #:: fibs.zip(fibs.tail).map { n => n._1 + n._2 }
-
-  lazy val line: Stream[Double] =
 
   def fibs2(n: Int) : BigInt = {
     var a: BigInt = 0
@@ -52,5 +45,13 @@ package object scaud {
       }
       b
     }
+  }
+
+  def line(start: Double, end: Double, t: Double): Iterator[Double] = {
+    new Line(start, end, t)
+  }
+
+  def saw(freq: Any) : Iterator[Double] = {
+    new SawIter(freq)
   }
 }
