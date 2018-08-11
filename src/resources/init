@@ -1,0 +1,6 @@
+:require c:/code/scala/scaud/out/artifacts/scaud/scaud.jar
+
+import com.simonsen.scaud._
+import com.simonsen.scaud.Main.Sample2
+
+startSoundSystem()

@@ -1,18 +1,6 @@
 package com.simonsen.scaud
 
-import java.nio.{ByteBuffer, ByteOrder}
-
-import javax.sound.sampled.SourceDataLine
-
-import scala.util.Random
-
 object Main {
-  var sourcedataline: SourceDataLine = _
-  val sr = 44100
-  val invsr : Double = 1.0 / sr
-  val tau : Double = Math.PI * 2
-  val random = new Random()
-
   implicit class Sample(samples: Array[Double]) {
     def +(x: Double) : Array[Double] = {
       for (i <- samples.indices) {
@@ -50,33 +38,9 @@ object Main {
     }
   }
 
-  implicit class Sample2(samples: Iterator[Double]) {
-    def *(other: Iterator[Double]) : Iterator[Double] = {
-      new Multiply(samples, other)
-    }
-
-    def *(other: Double) : Iterator[Double] = {
-      new Multiply(samples, Iterator.continually(other))
-    }
-  }
-
   def main(args: Array[String]): Unit = {
     startSoundSystem()
-
-    play(saw(100.0) * saw(332.0) * line(1, 0, 1))
-  }
-
-  def startSoundSystem(): Unit = {
-    println("Starting sound system")
-    javax.sound.sampled.AudioSystem.getMixerInfo map(x => x.getName) foreach println
-    //val mixerinfo = javax.sound.sampled.AudioSystem.getMixerInfo().filter(mixerinfo => "Speakers (RME Fireface UC)".equals(mixerinfo.getName())).apply(0)
-    val mixerinfo = javax.sound.sampled.AudioSystem.getMixerInfo().filter(mixerinfo => "default [default]".equals(mixerinfo.getName)).apply(0)
-    println(mixerinfo.getName())
-    val audioformat = new javax.sound.sampled.AudioFormat(javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED, 44100, 16, 2, 4, 44100, false);
-    println(audioformat)
-    sourcedataline = javax.sound.sampled.AudioSystem.getSourceDataLine(audioformat, mixerinfo)
-    sourcedataline.open()
-    sourcedataline.start()
+    play(saw(100.0) * line(1, 0, 0.1))
   }
 
   def impulse(): Array[Double] = {
@@ -108,21 +72,6 @@ object Main {
     }
     println("manySines: " + (System.currentTimeMillis() - a) + " ms")
     samples
-  }
-
-  def play(samples: Array[Double]): Unit = {
-    val buffer = ByteBuffer.allocate(samples.length * 2 * 2)
-    buffer.order(ByteOrder.LITTLE_ENDIAN)
-    samples.foreach(sample => {
-      val pcm16sample : Short = if (sample > 1) 32767 else if (sample < -1) -32767 else (sample * 32767).asInstanceOf[Short]
-      buffer.putShort(pcm16sample)
-      buffer.putShort(pcm16sample)
-    })
-    sourcedataline.write(buffer.array, 0, buffer.array.length)
-  }
-
-  def play(samples : Iterator[Double]) : Unit = {
-    play(samples.toArray)
   }
 }
 

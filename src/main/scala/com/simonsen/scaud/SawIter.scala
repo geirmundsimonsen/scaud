@@ -14,7 +14,7 @@ class SawIter(freq: Any) extends Iterator[Double] {
   }
 
   def next() : Double = {
-    val phaseInc = Main.invsr * freqIter.next() * 2
+    val phaseInc = invsr * freqIter.next() * 2
     val out = phase
     phase += phaseInc
     if (phase > 1)

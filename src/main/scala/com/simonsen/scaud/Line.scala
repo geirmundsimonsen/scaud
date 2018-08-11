@@ -2,7 +2,7 @@ package com.simonsen.scaud
 
 class Line(start: Double, end: Double, t: Double) extends Iterator[Double] {
   var value: Double = start
-  val step: Double = end - start * Main.invsr * (1 / t)
+  val step: Double = (end - start) * invsr * (1 / t)
   val n: Int = ((end - start) / step).toInt
   val slope = if (end > start) Rising else if (end < start) Falling else Flat
 

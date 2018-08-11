@@ -7,7 +7,7 @@ class DSP {
 
     freq match {
       case freq: Double =>
-        val phaseInc = Main.invsr * freq * 2
+        val phaseInc = invsr * freq * 2
         for (i <- Range(0, numsamples)) {
           samples(i) = phase
           phase += phaseInc
@@ -16,7 +16,7 @@ class DSP {
         }
       case freq: Array[Double] =>
         for (i <- Range(0, numsamples)) {
-          val phaseInc = Main.invsr * freq(i) * 2
+          val phaseInc = invsr * freq(i) * 2
           samples(i) = phase
           phase += phaseInc
           if (phase > 1)

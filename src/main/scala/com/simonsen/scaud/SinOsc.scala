@@ -6,7 +6,7 @@ object SinOsc {
     var phase = 0.0
     freq match {
       case f: Double =>
-        val phaseinc = Main.invsr * Main.tau * f
+        val phaseinc = invsr * tau * f
         for (x <- samples.indices) {
           samples(x) = Math.sin(phase)
           phase += phaseinc
@@ -14,7 +14,7 @@ object SinOsc {
       case f: Array[Double] =>
         for (x <- samples.indices) {
           samples(x) = Math.sin(phase)
-          phase += Main.invsr * Main.tau * f(x)
+          phase += invsr * tau * f(x)
         }
     }
 
