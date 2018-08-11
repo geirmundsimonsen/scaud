@@ -1,6 +1,6 @@
 package com.simonsen.scaud
 
-class Multiply(a: Any, b: Any) extends Iterator[Double] {
+class Add(a: Any, b: Any) extends Iterator[Double] {
   val aIter = a match {
     case a: Iterator[Double] => a
     case a: Double => Iterator.continually(a)
@@ -16,6 +16,6 @@ class Multiply(a: Any, b: Any) extends Iterator[Double] {
   }
 
   def next() : Double = {
-    aIter.next() * bIter.next()
+    aIter.next() + bIter.next()
   }
 }

@@ -21,12 +21,26 @@ package object scaud {
     def *(other: Double) : Iterator[Double] = {
       new Multiply(samples, Iterator.continually(other))
     }
+
+    def +(other: Iterator[Double]) : Iterator[Double] = {
+      new Add(samples, other)
+    }
+
+    def +(other: Double) : Iterator[Double] = {
+      new Add(samples, other)
+    }
   }
 
   def startSoundSystem(): Unit = {
     println("Starting sound system")
-    val mixerinfo = javax.sound.sampled.AudioSystem.getMixerInfo().filter(mixerinfo => "Speakers (RME Fireface UC)".equals(mixerinfo.getName())).apply(0)
-    //val mixerinfo = javax.sound.sampled.AudioSystem.getMixerInfo().filter(mixerinfo => "default [default]".equals(mixerinfo.getName)).apply(0)
+
+    var device = if ("gesi".equals(System.getProperty("user.name"))) {
+      "default [default]"
+    } else {
+      "Speakers (RME Fireface UC)"
+    }
+
+    val mixerinfo = javax.sound.sampled.AudioSystem.getMixerInfo().filter(mixerinfo => device.equals(mixerinfo.getName())).apply(0)
     val audioformat = new javax.sound.sampled.AudioFormat(javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED, 44100, 16, 2, 4, 44100, false);
     sourcedataline = javax.sound.sampled.AudioSystem.getSourceDataLine(audioformat, mixerinfo)
     sourcedataline.open()
@@ -46,6 +60,10 @@ package object scaud {
 
   def play(samples : Iterator[Double]) : Unit = {
     play(samples.toArray)
+  }
+
+  def db2amp(db: Double): Double = {
+    Math.exp(db/8.65618)
   }
 
   def saw(numsamples: Int, freq: Any) : Array[Double] = {
@@ -80,5 +98,9 @@ package object scaud {
 
   def saw(freq: Any) : Iterator[Double] = {
     new SawIter(freq)
+  }
+
+  def exp(start: Double, dbPrSec: Double, limit: Double) : Iterator[Double] = {
+    new Exp(start, dbPrSec, limit)
   }
 }
