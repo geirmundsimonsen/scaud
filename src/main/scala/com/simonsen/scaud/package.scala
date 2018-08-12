@@ -1,9 +1,9 @@
 package com.simonsen
 
 import javax.sound.sampled.SourceDataLine
-
 import java.nio.{ByteBuffer, ByteOrder}
 
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.util.Random
 
 package object scaud {
@@ -28,6 +28,28 @@ package object scaud {
 
     def +(other: Double) : Iterator[Double] = {
       new Add(samples, other)
+    }
+  }
+
+  implicit class Sample3(samples: ArrayBuffer[Double]) {
+    def place(iter: Iterator[Double], at: Double): ArrayBuffer[Double] = {
+      val atInt = at.toInt
+      for (x <- Range(samples.length, atInt)) {
+        samples.append(0);
+      }
+      iter.zipWithIndex.foreach { case(x, i) => if (samples.length <= i + atInt) {
+        samples.append(x)
+      } else {
+        samples(i + atInt) = samples(i + atInt) + x
+      } }
+      println(samples.length)
+      samples
+    }
+  }
+
+  implicit class ArrayExtension[T](array: Array[T]) {
+    def cycle(): Iterator[T] = {
+      new Cycle(array)
     }
   }
 
@@ -64,6 +86,10 @@ package object scaud {
 
   def db2amp(db: Double): Double = {
     Math.exp(db/8.65618)
+  }
+
+  def p2f(pitch: Double): Double = {
+    440 * Math.pow(2, (pitch-69)/12)
   }
 
   def saw(numsamples: Int, freq: Any) : Array[Double] = {
